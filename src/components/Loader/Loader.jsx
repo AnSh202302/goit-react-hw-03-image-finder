@@ -1,3 +1,9 @@
+import { PiSpinnerGapLight } from 'react-icons/pi';
 export const Loader = () => {
-  return <h1>Loading...</h1>;
+  return (
+    <h1>
+      <PiSpinnerGapLight className="icon-spin" />
+      Loading...
+    </h1>
+  );
 };

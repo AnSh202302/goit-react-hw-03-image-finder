@@ -28,7 +28,7 @@ export default class Searchbar extends Component {
             className="SearchForm-button"
             onClick={this.handleClick}
           >
-            <BsSearch />
+            <BsSearch size={20} />
             {/* <span className="SearchForm-button-label">
             </span> */}
           </button>
