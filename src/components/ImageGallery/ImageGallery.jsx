@@ -6,19 +6,37 @@ import { getImg } from 'services/pixabay-api';
 
 export default class ImageGallery extends Component {
   state = {
-    img: null,
+    img: [],
     error: null,
     status: 'idle',
+    page: 1,
+    totalPage: 0,
   };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.imgInfo !== this.props.imgInfo) {
-      this.setState({ status: 'pending' });
+  componentDidUpdate(prevProps, prevState) {
+    const { imgValue } = this.props;
+    const { page, img } = this.state;
 
-      getImg(this.props.imgInfo)
+    if (prevProps.imgValue !== imgValue || prevState.page !== page) {
+      if (img.length === 0 || prevProps.imgValue !== imgValue) {
+        this.setState({ status: 'pending' });
+      }
+      if (prevProps.imgValue !== imgValue) {
+        this.setState({ page: 1 });
+      }
+      getImg(imgValue, page)
         .then(res => res.json())
         .then(img => {
-          this.setState({ img: img.hits, status: 'resolved' });
+          console.log(img);
+          this.setState(prevState => ({
+            // page: prevProps.imgValue !== imgValue ? 1 : this.state.page,
+            img:
+              prevProps.imgValue !== imgValue
+                ? img.hits
+                : [...prevState.img, ...img.hits],
+            status: 'resolved',
+            totalPage: img.totalHits / 12,
+          }));
         })
         .catch(error => {
           this.setState({ error, status: 'rejected' });
@@ -26,18 +44,22 @@ export default class ImageGallery extends Component {
     }
   }
 
-  searchImg = e => {
-    console.log(e.target);
-    console.log(this.state.img);
+  handleButtonClick = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
+
   render() {
-    const { img, error, status } = this.state;
+    const { img, error, status, page, totalPage } = this.state;
+
+    if (status === 'idle') return;
 
     if (status === 'pending') return <Loader />;
 
     if (status === 'rejected') return <p>{error.message}</p>;
 
-    if (status === 'resolved') {
+    if (img && status === 'resolved') {
       return (
         <>
           <ul className="ImageGallery">
@@ -45,26 +67,17 @@ export default class ImageGallery extends Component {
               <ImageGalleryItem img={el} key={el.id} />
             ))}
           </ul>
-          <Button type="button" className="Button"></Button>
+          {img.length !== 0 && page < totalPage && (
+            <Button
+              type="button"
+              className="Button"
+              onClick={this.handleButtonClick}
+            >
+              Load more
+            </Button>
+          )}
         </>
       );
     }
-    // return (
-    //   <>
-    //     {error && <p>{error.message}</p>}
-    //     {loading && <Loader />}
-    //     {img && (
-    //       <ul className="ImageGallery">
-    //         {img.map(el => (
-    //           <ImageGalleryItem
-    //             key={el.id}
-    //             tags={el.tags}
-    //             webformatURL={el.webformatURL}
-    //           />
-    //         ))}
-    //       </ul>
-    //     )}
-    //   </>
-    // );
   }
 }

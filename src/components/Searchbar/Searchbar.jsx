@@ -16,7 +16,7 @@ export default class Searchbar extends Component {
       return toast('Enter value!');
     }
     this.props.onSubmit(this.state.imgSearch);
-    this.setState({ imgSearch: '' });
+    // this.setState({ imgSearch: '' });
   };
 
   render() {
@@ -29,8 +29,6 @@ export default class Searchbar extends Component {
             onClick={this.handleClick}
           >
             <BsSearch size={20} />
-            {/* <span className="SearchForm-button-label">
-            </span> */}
           </button>
 
           <input
