@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import { Component } from 'react';
 import { BsSearch } from 'react-icons/bs';
 
@@ -10,28 +9,28 @@ export default class Searchbar extends Component {
   handleImgSearchChange = e => {
     this.setState({ imgSearch: e.currentTarget.value.toLowerCase() });
   };
-  handleClick = e => {
+  handleSubmit = e => {
     e.preventDefault();
     if (this.state.imgSearch.trim() === '') {
-      return toast('Enter value!');
+      return alert('Enter value!');
     }
     this.props.onSubmit(this.state.imgSearch);
-    // this.setState({ imgSearch: '' });
+    this.reset();
   };
+  reset() {
+    this.setState({ imgSearch: '' });
+  }
 
   render() {
     return (
       <header className="searchbar">
-        <form className="searchForm">
-          <button
-            type="submit"
-            className="SearchForm-button"
-            onClick={this.handleClick}
-          >
+        <form className="searchForm" onSubmit={this.handleSubmit}>
+          <button type="submit" className="SearchForm-button">
             <BsSearch size={20} />
           </button>
 
           <input
+            value={this.state.imgSearch}
             className="SearchForm-input "
             type="text"
             autoComplete="off"
